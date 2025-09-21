@@ -7,6 +7,14 @@ const deleteReview = async function(id){
   loadReviews();
 }
 
+const editReview = async function(){
+  await fetch(`/edit`, {
+    method: "POST"
+  })
+
+  loadReviews();
+}
+
 const loadReviews = async function(){
   const response = await fetch("/reviews");
   const data = await response.json();
