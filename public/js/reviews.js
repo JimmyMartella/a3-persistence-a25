@@ -7,12 +7,47 @@ const deleteReview = async function(id){
   loadReviews();
 }
 
-const editReview = async function(){
+const editReview = async function(id){
+  const response = await fetch("/reviews");
+  const data = await response.json();
+  const auditedReview = data.find(i => i.id === id)
+
+  document.querySelector("#blurb") = auditedReview.blurb;
+  document.querySelector("#gameplayRating").value = auditedReview.gameplayRating;
+  document.querySelector("#storyRating").value = auditedReview.storyRating;
+  document.querySelector("#visualsRating").value = auditedReview.visualsRating;
+  document.querySelector("#musicRating").value = auditedReview.musicRating;
+
+  const submit = document.querySelector("#submit-edit-button");
+  submit.onclick = () => confirmEditReview(id);
+
+  const cancel = document.querySelector("cancel-edit-button");
+  submit.onclick = cancelEditReview;
+}
+
+const confirmEditReview = async function(id){
+  const editedReview = {
+    id: id,
+    datePosted: datePosted,
+    title: title,
+    year: year,
+    blurb: document.querySelector("blurb"),
+    gameplayRating: parseInt(document.querySelector("#gameplayRating").value) || 0,
+    storyRating: parseInt(document.querySelector("#storyRating").value) || 0,
+    visualsRating: parseInt(document.querySelector("#visualsRating").value) || 0,
+    musicRating: parseInt(document.querySelector("#musicRating").value) || 0
+  }
+
   await fetch(`/edit`, {
-    method: "POST"
+    method: "POST",
+    body: JSON.stringify({ id, editedReview })
   })
 
-  loadReviews();
+  window.location.href = "reviews.html";
+}
+
+const cancelEditReview = async function(){
+  window.location.hreff = "reviews.html"
 }
 
 const loadReviews = async function(){
@@ -61,6 +96,12 @@ const loadReviews = async function(){
                             </tbody>
                            `;
     newReview.appendChild(scoreTable);
+
+    const edit = document.createElement("button");
+    edit.className = "edit-button";
+    edit.innerText = "Edit Contents";
+    edit.onclick = () => editReview(i.id);
+    newReview.appendChild(edit);
 
     const deletion = document.createElement("button");
     deletion.className = "delete-button";

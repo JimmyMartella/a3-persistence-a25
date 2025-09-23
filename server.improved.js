@@ -9,6 +9,7 @@ const http = require( "http" ),
 
 let appdata = [{
   id: 0,
+  datePosted: new Date().toLocaleString(),
   title: "Celeste",
   year: 2018,
   blurb: "My favourite game of all time.",
@@ -16,8 +17,7 @@ let appdata = [{
   storyRating: 10,
   visualsRating: 10,
   musicRating: 10,
-  overallRating: 10,
-  datePosted: new Date().toLocaleString()
+  overallRating: 10
 }]
 
 let tbid = 1;
@@ -56,13 +56,19 @@ const handlePost = function(request, response){
     if (request.url === "/submit"){
       const overallRating = ((parseInt(data.gameplayRating) || 0) + (parseInt(data.storyRating) || 0) + (parseInt(data.visualsRating) || 0) + (parseInt(data.musicRating) || 0)) / 4
       const datePosted = new Date().toLocaleString()
-      const newReview = { tbid, ...data, overallRating, datePosted }
+      const newReview = { tbid, datePosted, ...data, overallRating }
       tbid++
       appdata.push(newReview)
       response.writeHead(200, "OK", { "Content-Type": "application/json" })
       response.end(JSON.stringify(appdata))
+    } else if (request.url === "/edit"){
+      const overallRating = ((parseInt(data.editedReview.gameplayRating) || 0) + (parseInt(data.editedReview.storyRating) || 0) + (parseInt(data.editedReview.visualsRating) || 0) + (parseInt(data.editedReview.musicRating) || 0)) / 4
+      const index = appdata.findIndex(i => i.id === data.id)
+      appdata[index] = { ...data.updated, overallRating }
+      response.writeHead(200, "OK", { "Content-Type": "application/json" })
+      response.end(JSON.stringify(appdata))
     } else if (request.url === "/delete"){
-      const index = appdata.findIndex(item => item.id === data.id)
+      const index = appdata.findIndex(i => i.id === data.id)
       appdata.splice(index, 1)
       response.writeHead(200, "OK", { "Content-Type": "application/json" })
       response.end(JSON.stringify(appdata))
