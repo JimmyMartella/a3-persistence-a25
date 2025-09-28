@@ -1,11 +1,25 @@
-// FRONT-END (CLIENT) JAVASCRIPT HERE
+const getUserStatus = async function(){
+  try {
+    // console.log("Getting User Status");
+    const response = await fetch("/user");
+    const session = await response.json();
+    // console.log(session);
+    // console.log(session.user);
+    // console.log(session.status);
+    const statusUser = {
+      status: session.status,
+      user: session.user
+    }
+    // console.log(statusUser);
+    return statusUser;
+  } catch (error){
+    console.error("Failed to Fetch User Status")
+  }
+}
 
 const submit = async function(event){
-  // stop form submission from trying to load
-  // a new .html page for displaying results...
-  // this was the original browser behavior and still
-  // remains to this day
   event.preventDefault();
+  // console.log("Hello");
 
   const review = {
     title: document.querySelector("#title").value,
@@ -17,23 +31,52 @@ const submit = async function(event){
     musicRating: parseInt(document.querySelector("#musicRating").value) || 0
   }
 
-  const body = JSON.stringify(review)
+  try {
+    const response = await fetch("/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(review)
+    })
 
-  const response = await fetch("/submit", {
-    method: "POST",
-    body
-  })
+    if (response.ok){
+      window.location.href = "reviews.html";
+    } else {
+      console.log("Error");
+      console.log(response);
+      console.error(await response.json())
+    }
+  } catch (error){
+    console.error("Error Submitting Review Data: ", error);
+  }
+  
+}
 
-  const data = await response.json();
-
-  if (response.ok){
-    window.location.href = "reviews.html";
-  } else {
-    alert("Error");
+const logCheck = async function(){
+  const logLink = document.querySelector("#log-link");
+  logLink.onclick = async (event) => {
+    event.preventDefault();
+    await fetch("/logout", { method: "POST" });
+    location.reload();
   }
 }
 
-window.onload = function() {
-   const button = document.querySelector("button");
-  button.onclick = submit;
+window.onload = async function(){
+  // console.log("Test");
+  const userStatus = await getUserStatus();
+  if (!userStatus.status){
+    window.location.href = "login.html";
+    return;
+  }
+
+  const submitButton = document.getElementById("submit-button");
+  if (submitButton)
+    submitButton.onclick = submit;
+
+  const logLink = document.querySelector("#log-link");
+  logLink.onclick = async (event) => {
+    event.preventDefault();
+    await fetch("/logout", { method: "POST" });
+    location.reload();
+  }
 }
+
