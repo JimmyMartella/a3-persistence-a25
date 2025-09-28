@@ -5,8 +5,8 @@ const session = require('express-session')
 const bcrypt = require('bcrypt');
 
 const { ObjectId, MongoClient, ServerApiVersion } = require('mongodb');
-// const uri = `mongodb+srv://${process.env.USERNM}:${process.env.PASS}@${process.env.HOST}/?retryWrites=true&w=majority&appName=Webware-Assignment-Three-A`;
-const client = new MongoClient(process.env.URI, { serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true, }});
+const uri = `mongodb+srv://${process.env.USERNM}:${process.env.PASS}@${process.env.HOST}/?retryWrites=true&w=majority&appName=Webware-Assignment-Three-A`;
+const client = new MongoClient(uri, { serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true, }});
 
 const app = express()
 app.use(express.json())
