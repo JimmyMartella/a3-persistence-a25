@@ -22,7 +22,7 @@ app.use(session({
 let reviewCollection = null
 let userCollection = null
 
-async function run() {
+const run = async function(){
     try {
         await client.connect(error => {
             console.log("Error :", error);
@@ -183,7 +183,7 @@ app.post('/delete', authorisation, async (request, response) => {
     }
 })
 
-async function startup(){
+const startup = async function(){
     await run();
     app.listen(process.env.PORT || 3000, () => {
         console.log("Server Up")
